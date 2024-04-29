@@ -1,6 +1,6 @@
 <p>
 1.) DEMO
-<br/>https://script.google.com/macros/s/AKfycbwnIamevylAFQwc4T9PVKveMKLhdbXQOdwkNwuazti66nbJluKZoxBsEW6Kiah5O8zBkw/exec
+<br/><a href="https://script.google.com/macros/s/AKfycbwnIamevylAFQwc4T9PVKveMKLhdbXQOdwkNwuazti66nbJluKZoxBsEW6Kiah5O8zBkw/exec" target="_blank">Click Here.</a>
 </p>
 
 <p>
