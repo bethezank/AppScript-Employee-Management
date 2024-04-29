@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+</head>
+
+<body>
+  <button class="btn btn-accent btn-xs" onclick="newEmployee.showModal()">เพิ่มพนักงานใหม่</button>
+  <dialog id="newEmployee" class="modal">
+    <div class="modal-box w-11/12 max-w-5xl">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-lg">เพิ่มพนักงานใหม่</h3>
+      <form name="newEmployeeForm" id="newEmployeeForm" onsubmit="handleSubmit(this)">
+
+        <div class="flex flex-col lg:flex-row">
+          <div class="w-full lg:w/2">
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">ชื่อ</span>
+              </div>
+              <input type="text" name="firstName" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">นามสกุล</span>
+              </div>
+              <input type="text" name="lastName" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">อายุ</span>
+              </div>
+              <input type="number" name="age" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">วันเกิด</span>
+              </div>
+              <input type="date" id="birthDate" name="birthDate" class="input input-bordered w-full" required />
+            </label>
+          </div>
+
+          <div class="divider lg:divider-horizontal"></div>
+
+          <div class="w-full lg:w/2">
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">สัญชาติ</span>
+              </div>
+              <select name="nationality" class="select select-bordered w-full" required>
+                <option value="" disabled selected>โปรดเลือก</option>
+                <option value="ไทย">ไทย</option>
+                <option value="เมียนมา ">เมียนมา </option>
+              </select>
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">ที่อยู่</span>
+              </div>
+              <input type="text" name="address" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">รูปพนักงาน</span>
+              </div>
+              <input type="file" name="profileImage" class="file-input file-input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">บัตรประชาชน</span>
+              </div>
+              <input type="file" name="idcardImage" class="file-input file-input-bordered w-full" required />
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button
+            id="submitBtn"
+            type="submit"
+            class="btn btn-accent mt-8"
+          >
+            บันทึกข้อมูล
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </dialog>
+  <script>
+    const form = document.getElementById('newEmployeeForm')
+    form.addEventListener('submit', function(event) {
+      event.preventDefault()
+    })
+    
+    const handleSubmit = formData => {
+      const submitBtn = document.getElementById('submitBtn')
+      submitBtn.innerHTML = "กำลังบันทึกข้อมูล..."
+      submitBtn.disabled = true
+      google.script.run
+      .withSuccessHandler(handleSuccess)
+      .addNewData(formData)
+    }
+
+    const handleSuccess = response => {
+      if (response) {
+        Swal.fire({
+          target: document.getElementById('newEmployee'),
+          icon: "success",
+          title: "สำเร็จ",
+          text: "บันทึกข้อมูลเรียบร้อย",
+        })
+        .then( res => {
+          if(res.isConfirmed){
+            form.reset()
+            employeeTable.ajax.reload(null, false)
+          }
+        })
+      } else {
+        Swal.fire({
+          target: document.getElementById('newEmployee'),
+          icon: "error",
+          title: "พบข้อผิดพลาด",
+          text: "บันทึกข้อมูลไม่สำเร็จ",
+        });
+      }
+      const submitBtn = document.getElementById('submitBtn')
+      submitBtn.innerHTML = "บันทึกข้อมูล"
+      submitBtn.disabled = false
+    }
+
+  </script>
+</body>
+
+</html>

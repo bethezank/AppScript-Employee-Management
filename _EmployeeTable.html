@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+
+  <!-- dataTable -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.dataTables.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.dataTables.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.js"></script>
+  <script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.dataTables.js"></script>
+
+  <!-- Sweetalert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!--  HTML2Canvas-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.js"
+    integrity="sha512-sn/GHTj+FCxK5wam7k9w4gPPm6zss4Zwl/X9wgrvGMFbnedR8lTUSLdsolDRBRzsX6N+YgG6OWyvn9qaFVXH9w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas2image@1.0.5/canvas2image.min.js"></script>
+</head>
+
+<body class="ibm-plex-sans-thai-regular">
+  <table id="employeeTable" class="display responsive" style="width:100%">
+    <thead>
+      <tr>
+        <th>รหัสพนักงาน</th>
+        <th>รูปพนักงาน</th>
+        <th>ชื่อ-นามสกุล</th>
+        <th>อายุ (ปี)</th>
+        <th>วันเกิด</th>
+        <th>สัญชาติ</th>
+        <th>ที่อยู่</th>
+        <th>บัตรประชาชน</th>
+        <th>บัตรพนักงาน</th>
+        <th>ดำเนินการ</th>
+      </tr>
+    </thead>
+  </table>
+
+  <!-- Update Employee -->
+
+  <dialog id="updateEmployeeModal" class="modal">
+    <div class="modal-box w-11/12 max-w-5xl">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-lg">แก้ไขพนักงานใหม่</h3>
+      <form name="updateEmployeeForm" id="updateEmployeeForm" onsubmit="handleUpdate(this)">
+
+        <div class="flex flex-col lg:flex-row">
+          <div class="w-full lg:w/2">
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">ชื่อ</span>
+              </div>
+              <input type="text" name="firstName" id="firstName" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">นามสกุล</span>
+              </div>
+              <input type="text" name="lastName" id="lastName" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">อายุ</span>
+              </div>
+              <input type="number" name="age" id="age" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">วันเกิด</span>
+              </div>
+              <input type="date" id="editBirthDate" name="birthDate" class="input input-bordered w-full" required />
+            </label>
+          </div>
+
+          <div class="divider lg:divider-horizontal"></div>
+
+          <div class="w-full lg:w/2">
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">สัญชาติ</span>
+              </div>
+              <select name="nationality" id="nationality" class="select select-bordered w-full" required>
+                <option value="" disabled selected>โปรดเลือก</option>
+                <option value="ไทย">ไทย</option>
+                <option value="เมียนมา">เมียนมา</option>
+              </select>
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">ที่อยู่</span>
+              </div>
+              <input type="text" name="address" id="address" class="input input-bordered w-full" required />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">รูปพนักงาน (ไม่ต้องการแก้ไข ไม่ต้องเลือก)</span>
+              </div>
+              <input type="file" name="profileImage" class="file-input file-input-bordered w-full" />
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text">บัตรประชาชน (ไม่ต้องการแก้ไข ไม่ต้องเลือก)</span>
+              </div>
+              <input type="file" name="idcardImage" class="file-input file-input-bordered w-full" />
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <input type="hidden" name="id" id="id" />
+          <button
+            id="updateBtn"
+            type="submit"
+            class="btn btn-accent mt-8"
+          >
+            บันทึกข้อมูล
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Employee Card -->
+
+  <dialog id="employeeCardModal" class="modal">
+    <div class="modal-box max-w-fit">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="font-bold text-lg">บัตรพนักงาน</h3>
+
+      <div class="flex flex-col gap-4">
+
+        <div id="employeeCardLayout"
+          class="w-[350px] flex flex-col border border-[lightgray] rounded-md overflow-hidden">
+          <div class="py-2 pr-4 flex flex-row justify-between items-center bg-[#ee2524]">
+            <img
+                class="w-[8rem]"
+                src="https://www.scg.com/landing/images-modify/logo.png"
+              />
+            <span class="h3 text-white font-semibold">โรงงาน PC-NK</span>
+          </div>
+          <img
+            id="employeeCard__profileImage"
+            class="object-cover min-w-full aspect-square"
+          />
+          <div class="p-4 grid grid-cols-[1fr,2fr] gap-2">
+            <span class="text-sm">ชื่อ-นามสกุล</span>
+            <span class="font-semibold" id="employeeCard__fullName"></span>
+
+            <span class="text-sm">วันเกิด</span>
+            <span class="font-semibold" id="employeeCard__birthDate"></span>
+
+            <span class="text-sm">สัญชาติ</span>
+            <span class="font-semibold" id="employeeCard__nationality"></span>
+          </div>
+        </div>
+
+        <div class="flex justify-center">
+          <button class="btn btn-xs btn-neutral" onclick="exportEmployeeCard()">ดาวน์โหลด</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </dialog>
+
+
+  <script>
+
+    (() => {
+      employeeTable = new DataTable('#employeeTable', {
+        processing: true,
+        responsive: true,
+        ajax: function (data, callback, settings) {
+            google.script.run.withSuccessHandler(callback).getEmployees(data);
+          },
+        columns: [
+          { data: 'employee_code' },
+          {
+            data: null,
+            render: function (data) {
+              return `<div class="flex justify-center items-center">
+                        <a href="${data.profile_image}" target="_blank">
+                          <div class="avatar">
+                            <div class="w-8 rounded-full">
+                              <img src="https://drive.google.com/thumbnail?id=${data.profile_image_id}" />
+                            </div>
+                          </div>
+                        </a>
+                      </div>`
+            }
+          },
+          { 
+            data: null,
+            render: function(data){
+              return `${data.first_name} ${data.last_name}`
+            } 
+          },
+          { data: 'age' },
+          { data: 'birth_date', 
+            render: function(data){ 
+              return convertThaiDate(data) 
+            }
+          },
+          { data: 'nationality' },
+          { data: 'address' },
+          {
+            data: 'id_card',
+            render: function (data) {
+              return `<a class="btn btn-xs" href="${data}" target="_blank">ดู</a>`;
+            }
+          },
+          {
+            data: null,
+            render: function (data) {
+              const employeeData = JSON.stringify(data).replaceAll("\"", "'")
+              return `<button class="btn btn-xs" onclick="employeeCard(${employeeData})">ดู</button>`
+            }
+          },
+          {
+            data: null,
+            render: function (data) {
+              const employeeData = JSON.stringify(data).replaceAll("\"", "'")
+              return `<div class="flex gap-2">
+                        <button class="btn btn-xs btn-warning" onclick="updateEmployee(${employeeData})">แก้ไข</button>
+                        <button class="btn btn-xs btn-error" onclick="deleteEmployee(${data.id})">ลบ</button>
+                      </div>`
+            }
+          }
+        ]
+      })
+
+    })()
+
+
+    // =========================================================================================
+
+    // refresh table button
+
+    const refreshTable = () => {
+        employeeTable.ajax.reload(null, false)
+    }
+    
+    // =========================================================================================
+
+    // Update Employee
+    
+    const updateEmployeeForm = document.getElementById('updateEmployeeForm')
+    updateEmployeeForm.addEventListener('submit', function(event) {
+      event.preventDefault()
+    })
+
+    const setInitialEmployeeData = (employeeObject) => {
+
+      const id = document.getElementById('id')
+      id.value = employeeObject.id
+
+      const firstName = document.getElementById('firstName')
+      firstName.value = employeeObject.first_name
+      
+      const lastName = document.getElementById('lastName')
+      lastName.value = employeeObject.last_name
+      
+      const age = document.getElementById('age')
+      age.value = employeeObject.age
+
+      const birthDate = document.getElementById('editBirthDate')
+      birthDate.value = employeeObject.birth_date
+
+      const nationality = document.getElementById('nationality')
+      nationality.value = employeeObject.nationality
+
+      const address = document.getElementById('address')
+      address.value = employeeObject.address
+
+    }
+
+    const updateEmployee = employeeData => {
+      setInitialEmployeeData(employeeData)
+      updateEmployeeModal.showModal()
+    }
+
+    const handleUpdate = formData => {
+      const updateBtn = document.getElementById('updateBtn')
+      updateBtn.innerHTML = "กำลังบันทึกข้อมูล..."
+      updateBtn.disabled = true
+      google.script.run
+      .withSuccessHandler(updateSuccess)
+      .doUpdateEmployee(formData)
+    }
+
+    const updateSuccess = response => {
+      if (response) {
+        form.reset()
+        updateEmployeeModal.close()
+        Swal.fire({
+          icon: "success",
+          title: "สำเร็จ",
+          text: "บันทึกข้อมูลเรียบร้อย",
+        })
+        .then( res => {
+          if(res.isConfirmed){
+            employeeTable.ajax.reload(null, false)
+          }
+        })
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "พบข้อผิดพลาด",
+          text: "บันทึกข้อมูลไม่สำเร็จ",
+        });
+      }
+      const updateBtn = document.getElementById('updateBtn')
+      updateBtn.innerHTML = "บันทึกข้อมูล"
+      updateBtn.disabled = false
+    }
+
+    // =========================================================================================
+
+    // Delete Employee
+
+    const deleteEmployee = id => {
+
+      Swal.fire({
+        icon: "warning",
+        title: "โปรดยืนยัน",
+        text: "คุณต้องการลบข้อมูลหรือไม่?",
+        showCancelButton: true,
+        confirmButtonText: "ลบ",
+        cancelButtonText: "ยกเลิก",
+        preConfirm: async () => {
+          google.script.run.withSuccessHandler( () => {} ).doDeleteEmployee(id)
+        }
+      })
+      .then( res => {
+          if(res.isConfirmed){
+            Swal.fire({
+              icon: "success",
+              title: "สำเร็จ",
+              text: "ลบข้อมูลเรียบร้อย",
+            })
+            .then( res => {
+              if(res.isConfirmed){
+                employeeTable.ajax.reload(null, false)
+              }
+            })
+          }
+
+        }
+      )
+
+    }
+
+    // =========================================================================================
+
+    // Employee Card
+
+    const employeeCard = employeeData => {
+      document.getElementById('employeeCard__fullName').innerHTML = `${employeeData.first_name} ${employeeData.last_name}`
+      document.getElementById('employeeCard__birthDate').innerHTML = convertThaiDate(employeeData.birth_date)
+      document.getElementById('employeeCard__nationality').innerHTML = employeeData.nationality
+      document.getElementById('employeeCard__profileImage').src = "https://drive.google.com/thumbnail?id=" + employeeData.profile_image_id
+      employeeCardModal.showModal()
+    }
+
+    const exportEmployeeCard = async () => {
+      const canvas = await html2canvas(document.querySelector("#employeeCardLayout"), {useCORS: false, scale: 1})
+      Canvas2Image.saveAsPNG(canvas);
+    }
+
+    
+  </script>
+</body>
+
+</html>

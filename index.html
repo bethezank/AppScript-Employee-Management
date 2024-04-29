@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html data-theme="light">
+
+<head>
+  <base target="_top">
+  <?!= include('_Header'); ?>
+  <?!= include('_Style'); ?>
+  <?!= include('_Javascript'); ?>
+  <?!= include('_Util_ConvertThaiDate'); ?>
+</head>
+
+<body class="ibm-plex-sans-thai-regular">
+  <?!= genNavbarLink(include('_Navbar')); ?>
+  <div class="container mx-auto p-4">
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <div class="card-title flex-col sm:flex-row justify-between">
+          <h2>ข้อมูลพนักงานในระบบ</h2>
+          <div class="flex gap-2">
+            <?!= include('_AddNewEmployee'); ?>
+            <button id="refreshBtn" class="btn btn-neutral btn-xs" onclick="refreshTable()">รีเฟรชตาราง</button>
+          </div>
+        </div>
+        <?!= include('_EmployeeTable'); ?>
+      </div>
+    </div>
+  </div>
+  <?!= include('_Footer'); ?>
+</body>
+
+</html>

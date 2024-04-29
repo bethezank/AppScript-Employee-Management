@@ -1,0 +1,29 @@
+<script>
+  const convertThaiDate = dateString => {
+
+    const date = new Date(dateString);
+
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+
+    const thaiMonths = [
+      "มกราคม", // January
+      "กุมภาพันธ์", // February
+      "มีนาคม", // March
+      "เมษายน", // April
+      "พฤษภาคม", // May
+      "มิถุนายน", // June
+      "กรกฎาคม", // July
+      "สิงหาคม", // August
+      "กันยายน", // September
+      "ตุลาคม", // October
+      "พฤศจิกายน", // November
+      "ธันวาคม"  // December
+    ];
+
+    const thaiMonth = thaiMonths[month];
+
+    return `${day} ${thaiMonth} ${year}`
+  }
+</script>
